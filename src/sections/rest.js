@@ -1,5 +1,6 @@
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { STRIDE, rigScale } from '../samurai.js';
 
 const reveal = (targets, trigger, vars = {}, start = 'top 80%') =>
   gsap.from(targets, {
@@ -96,10 +97,19 @@ export function initCases() {
 
 export function initContact() {
   const sec = document.querySelector('.contact');
+  const figure = sec.querySelector('.contact-samurai');
+  const samurai = figure.samurai;
+  // He walks back on stage and plants his sword: the bookend to the hero.
+  const walkIn = () => window.innerWidth * 0.35;
+  const cycles = () => walkIn() / (STRIDE * rigScale(figure));
+  samurai.pose({ facing: -1, walkBlend: 1 });
+
   gsap
-    .timeline({ scrollTrigger: { trigger: sec, start: 'top 90%', end: 'top 10%', scrub: true } })
+    .timeline({ scrollTrigger: { trigger: sec, start: 'top 90%', end: 'top 10%', scrub: true, invalidateOnRefresh: true } })
     .from(sec.querySelectorAll('.mega-back .mega-line'), { yPercent: 80, opacity: 0, stagger: 0.1 }, 0)
-    .from(sec.querySelector('.contact-portrait'), { yPercent: 25, opacity: 0 }, 0.1)
+    .fromTo(figure, { x: walkIn }, { x: 0, ease: 'none', duration: 0.8 }, 0)
+    .fromTo(samurai.state, { walk: 0 }, { walk: cycles, ease: 'none', duration: 0.8, onUpdate: () => samurai.pose() }, 0)
+    .fromTo(samurai.state, { walkBlend: 1 }, { walkBlend: 0, duration: 0.25, onUpdate: () => samurai.pose() }, 0.8)
     .from(sec.querySelectorAll('.mega-front .mega-line'), { yPercent: 120, opacity: 0, stagger: 0.1 }, 0.1)
     .from(sec.querySelector('.glow'), { opacity: 0, scale: 0.5 }, 0);
   reveal(sec.querySelectorAll('.contact-card > *'), sec.querySelector('.contact-card'), {}, 'top 95%');

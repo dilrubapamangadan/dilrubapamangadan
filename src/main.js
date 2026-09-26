@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import { render } from './render.js';
 import { createEmbers } from './embers.js';
+import { createSamurai } from './samurai.js';
 import { initHero } from './sections/hero.js';
 import { initAbout } from './sections/about.js';
 import { initExperience } from './sections/experience.js';
@@ -13,6 +14,12 @@ import { initSkills, initAI, initCases, initContact } from './sections/rest.js';
 gsap.registerPlugin(ScrollTrigger);
 
 render(document.getElementById('app'));
+
+// Mount a posable samurai into every slot; sections reach it via slot.samurai.
+document.querySelectorAll('[data-samurai]').forEach((slot) => {
+  slot.samurai = createSamurai({ variant: slot.dataset.samurai });
+  slot.append(slot.samurai.el);
+});
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const rail = document.querySelector('.rail-fill');

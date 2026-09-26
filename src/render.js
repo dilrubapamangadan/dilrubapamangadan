@@ -24,6 +24,8 @@ const socials = () => {
 const portrait = (cls = '') =>
   `<img class="portrait ${cls}" src="${profile.photo}" data-fallback="${profile.photoFallback}" alt="Portrait of ${profile.name}" draggable="false" />`;
 
+const samuraiSlot = (cls, variant = 'crimson') => `<div class="samurai-slot ${cls}" data-samurai="${variant}"></div>`;
+
 const slashes = () => `
   <svg class="slashes" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
     <path pathLength="1" d="M60 380 C 300 330, 560 300, 960 170" />
@@ -60,7 +62,7 @@ const hero = () => `
     <div class="glow"></div>
     <div class="hero-stage">
       ${title(profile.first, profile.last, 'mega-back')}
-      ${portrait('hero-portrait')}
+      ${samuraiSlot('hero-samurai')}
       ${title(profile.first, profile.last, 'mega-front')}
       ${slashes()}
     </div>
@@ -112,7 +114,7 @@ const experienceSection = () => `
   <section class="experience" id="experience">
     <div class="exp-pin">
       <div class="glow glow-right"></div>
-      ${portrait('exp-portrait')}
+      ${samuraiSlot('exp-samurai')}
       <article class="exp-card">
         <div class="exp-thumb">${portrait('exp-thumb-img')}</div>
         <div class="exp-card-top">
@@ -157,7 +159,8 @@ const duelSection = () => `
         <h3>${duel.right.title}</h3>
         <ul>${duel.right.items.map((x) => `<li>${x}</li>`).join('')}</ul>
       </div>
-      <div class="duel-blades" aria-hidden="true"><i></i><i></i></div>
+      ${samuraiSlot('duel-samurai duel-samurai-l')}
+      ${samuraiSlot('duel-samurai duel-samurai-r', 'gold')}
       <div class="duel-counter">
         <span class="eyebrow">Ma-ai · the distance travelled</span>
         <b class="duel-num">${duel.counter.to}</b>
@@ -289,7 +292,7 @@ const contact = () => `
     <div class="glow"></div>
     <div class="hero-stage contact-stage">
       ${title("LET'S", 'BUILD', 'mega-back')}
-      ${portrait('contact-portrait')}
+      ${samuraiSlot('contact-samurai')}
       ${title("LET'S", 'BUILD', 'mega-front')}
     </div>
     <div class="contact-card">

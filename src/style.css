@@ -317,7 +317,7 @@ body.scrolled .nav {
   transform-origin: top;
 }
 
-/* ---------- Mega title (distressed, layered around the portrait) ---------- */
+/* ---------- Mega title (distressed, layered around the samurai) ---------- */
 
 .hero-stage {
   position: absolute;
@@ -369,17 +369,36 @@ body.scrolled .nav {
   filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.6));
 }
 
-.hero-portrait,
-.contact-portrait {
+/* Code-drawn samurai (see src/samurai.js). Slots keep the rig's 400×820 ratio. */
+.samurai-slot {
   position: absolute;
-  z-index: 2;
   bottom: 0;
+  aspect-ratio: 400 / 820;
+  pointer-events: none;
+}
+
+.samurai,
+.samurai-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.samurai-crimson .samurai-svg {
+  filter: drop-shadow(0 0 22px rgba(255, 59, 59, 0.35));
+}
+
+.samurai-gold .samurai-svg {
+  filter: drop-shadow(0 0 22px rgba(255, 199, 102, 0.3));
+}
+
+.hero-samurai,
+.contact-samurai {
+  z-index: 2;
   left: 0;
   right: 0;
   margin: 0 auto;
-  height: 92%;
-  width: auto;
-  max-width: 100%;
+  height: 90%;
 }
 
 .slashes {
@@ -676,13 +695,10 @@ body.scrolled .nav {
   overflow: hidden;
 }
 
-.exp-portrait {
-  position: absolute;
+.exp-samurai {
   z-index: 1;
-  bottom: 0;
-  right: 8%;
-  height: 90%;
-  width: auto;
+  right: 12%;
+  height: 88%;
 }
 
 .exp-card {
@@ -952,29 +968,22 @@ body.scrolled .nav {
   font-size: 14px;
 }
 
-.duel-blades {
-  position: absolute;
+.duel-samurai {
   z-index: 3;
+  bottom: 3vh;
+  height: 76%;
+}
+
+/* Each warrior stands just off centre so the lunging blades cross in the middle. */
+.duel-samurai-l {
+  right: 50%;
+  margin-right: 4vw;
+}
+
+.duel-samurai-r {
   left: 50%;
-  top: 8vh;
-  width: 0;
-  height: 48vh;
+  margin-left: 4vw;
 }
-
-.duel-blades i {
-  position: absolute;
-  bottom: 0;
-  width: 3px;
-  height: 48vh;
-  margin-left: -1.5px;
-  border-radius: 3px;
-  background: linear-gradient(to top, #5b5f6c 0 14%, #f2eee9 16%, rgba(242, 238, 233, 0.6) 100%);
-  box-shadow: 0 0 14px rgba(255, 220, 180, 0.6);
-  transform-origin: bottom center;
-}
-
-.duel-blades i:first-child { left: -14vh; }
-.duel-blades i:last-child { left: 14vh; }
 
 .duel-counter {
   position: absolute;
@@ -1440,9 +1449,9 @@ body.scrolled .nav {
     top: 20vh;
     font-size: 19vw;
   }
-  .hero-portrait,
-  .contact-portrait {
-    height: 74%;
+  .hero-samurai,
+  .contact-samurai {
+    height: 72%;
   }
   .contact-stage .mega {
     top: 12vh;
@@ -1508,8 +1517,8 @@ body.scrolled .nav {
     height: auto;
     padding: 90px var(--gutter) 60px;
   }
-  .exp-portrait {
-    right: -10%;
+  .exp-samurai {
+    right: -12%;
     height: 70%;
     opacity: 0.35;
   }
@@ -1546,15 +1555,16 @@ body.scrolled .nav {
   .duel-word {
     font-size: 36vw;
   }
-  .duel-blades {
-    top: 22vh;
-    height: 30vh;
+  .duel-samurai {
+    height: 46%;
+    bottom: 26vh;
   }
-  .duel-blades i {
-    height: 30vh;
+  .duel-samurai-l {
+    margin-right: 6vw;
   }
-  .duel-blades i:first-child { left: -9vh; }
-  .duel-blades i:last-child { left: 9vh; }
+  .duel-samurai-r {
+    margin-left: 6vw;
+  }
   .duel-counter {
     top: 44%;
   }
@@ -1615,7 +1625,7 @@ body.scrolled .nav {
   .slashes path {
     stroke-dasharray: none;
   }
-  .exp-portrait {
+  .exp-samurai {
     opacity: 0.4;
   }
 }
