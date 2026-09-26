@@ -2,94 +2,104 @@ import './style.css';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { render } from './render.js';
-import { createEmbers } from './embers.js';
-import { createSamurai } from './samurai.js';
-import { initHero } from './sections/hero.js';
-import { initAbout } from './sections/about.js';
-import { initExperience } from './sections/experience.js';
-import { initDuel, initGallery } from './sections/projects.js';
-import { initSkills, initAI, initCases, initContact } from './sections/rest.js';
+import { chips } from './content.js';
+import { renderUI } from './ui.js';
+import { createWorld } from './world/scene.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
-render(document.getElementById('app'));
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const lite = window.innerWidth < 900 || (navigator.hardwareConcurrency || 8) <= 4;
 
-// Mount a posable samurai into every slot; sections reach it via slot.samurai.
-document.querySelectorAll('[data-samurai]').forEach((slot) => {
-  slot.samurai = createSamurai({ variant: slot.dataset.samurai });
-  slot.append(slot.samurai.el);
-});
+renderUI(document.getElementById('app'));
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const rail = document.querySelector('.rail-fill');
-
-let lenis = null;
-let embers = null;
-
-if (!reduceMotion) {
-  lenis = new Lenis({ lerp: 0.09, wheelMultiplier: 0.9 });
-  gsap.ticker.add((t) => lenis.raf(t * 1000));
-  gsap.ticker.lagSmoothing(0);
-  lenis.on('scroll', (e) => {
-    ScrollTrigger.update();
-    embers?.setVelocity(e.velocity);
-  });
-  embers = createEmbers(document.getElementById('embers'), { count: window.innerWidth < 900 ? 35 : 80 });
+// The 3D world is a progressive enhancement: without WebGL the panels still read as a normal page.
+let world = null;
+try {
+  world = createWorld(document.getElementById('world'), { chips, lite, reduced });
+} catch (err) {
+  console.warn('WebGL unavailable, showing the page without the 3D board.', err);
+  document.body.classList.add('no-webgl');
 }
 
-// Anchor links glide instead of jumping.
+// --- Smooth scrolling -----------------------------------------------------------
+let lenis = null;
+if (!reduced) {
+  lenis = new Lenis({ lerp: 0.1 });
+  lenis.on('scroll', ScrollTrigger.update);
+  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+const chapters = [...document.querySelectorAll('.chapter')];
+const railFill = document.querySelector('.rail-fill');
+const railNo = document.querySelector('.rail-no');
+const railName = document.querySelector('.rail-name');
+const navLinks = [...document.querySelectorAll('.nav-links a')];
+
+// Share of each chapter's scroll spent walking to its chip; the rest is spent parked there.
+const WALK = 0.42;
+const ease = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+const stops = world?.stops;
+const stopAt = (i) => stops?.[i].s ?? 0;
+
+function show(chapter, { s, dwell, panelSide, wave, live }) {
+  world?.set({ s, dwell, panelSide, wave });
+  chapters.forEach((c, i) => c.classList.toggle('live', i === chapter && live));
+  railNo.textContent = String(dwell + 1).padStart(2, '0');
+  railName.textContent = dwell >= 0 ? chips[dwell].title : chapter === 0 ? 'Boot' : 'Walking…';
+  navLinks.forEach((a) => a.classList.toggle('active', dwell >= 0 && a.hash === `#${chips[dwell].id}`));
+}
+const showHero = () => show(0, { s: stopAt(0), dwell: -1, panelSide: -1, wave: 1, live: true });
+
+// Hero: standing on the boot pad, waving.
+ScrollTrigger.create({
+  trigger: chapters[0],
+  start: 'top top',
+  end: 'bottom bottom',
+  onUpdate: (self) => self.isActive && showHero(),
+  onEnterBack: showHero,
+});
+
+// Each chip chapter: walk from the previous stop, then park at this chip while its panel is live.
+chapters.slice(1).forEach((el, i) => {
+  ScrollTrigger.create({
+    trigger: el,
+    start: 'top bottom',
+    end: 'bottom bottom',
+    onUpdate(self) {
+      if (!self.isActive) return;
+      const p = self.progress;
+      const from = stopAt(i);
+      const to = stopAt(i + 1);
+      const arrived = p >= WALK;
+      show(i + 1, {
+        s: arrived ? to : from + (to - from) * ease(p / WALK),
+        dwell: arrived ? i : -1,
+        panelSide: arrived ? (i % 2 ? -1 : 1) : 0,
+        wave: arrived && i === chips.length - 1 ? 1 : 0,
+        live: p > WALK - 0.06,
+      });
+    },
+  });
+});
+
+ScrollTrigger.create({
+  start: 0,
+  end: 'max',
+  onUpdate: (self) => (railFill.style.transform = `scaleY(${self.progress})`),
+});
+
+// Nav links glide to the moment he arrives at that chip.
 document.querySelectorAll('a[href^="#"]').forEach((a) =>
   a.addEventListener('click', (e) => {
     const target = document.querySelector(a.getAttribute('href'));
     if (!target) return;
     e.preventDefault();
-    lenis ? lenis.scrollTo(target, { duration: 1.6 }) : target.scrollIntoView();
+    const y = target.id === 'top' ? 0 : target.offsetTop + window.innerHeight * 0.15;
+    lenis ? lenis.scrollTo(y, { duration: 2.2 }) : window.scrollTo(0, y);
   })
 );
 
-// Progress rail + active nav link.
-const navLinks = [...document.querySelectorAll('.nav-links a')];
-ScrollTrigger.create({
-  start: 0,
-  end: 'max',
-  onUpdate: (self) => {
-    rail.style.transform = `scaleY(${self.progress})`;
-    document.body.classList.toggle('scrolled', self.scroll() > 40);
-  },
-});
-const mm = gsap.matchMedia();
-mm.add(
-  {
-    desktop: '(min-width: 900px) and (prefers-reduced-motion: no-preference)',
-    mobile: '(max-width: 899px) and (prefers-reduced-motion: no-preference)',
-  },
-  (ctx) => {
-    const opts = { desktop: ctx.conditions.desktop, embers };
-    initHero(opts);
-    initAbout(opts);
-    initExperience(opts);
-    initDuel(opts);
-    initGallery(opts);
-    initSkills(opts);
-    initAI(opts);
-    initCases(opts);
-    initContact(opts);
-    return () => document.querySelector('.exp-card')?.classList.remove('is-stepped');
-  }
-);
-
-// Created after the pinned sections so their offsets include pin spacing.
-navLinks.forEach((link) => {
-  const sec = document.querySelector(link.getAttribute('href'));
-  ScrollTrigger.create({
-    trigger: sec,
-    start: 'top 50%',
-    end: 'bottom 50%',
-    onToggle: (self) => link.classList.toggle('active', self.isActive),
-  });
-});
-
-// Pin spacing depends on image and font sizes.
+showHero();
 window.addEventListener('load', () => ScrollTrigger.refresh());
-document.fonts?.ready.then(() => ScrollTrigger.refresh());

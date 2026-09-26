@@ -1,7 +1,12 @@
-# Mohammed Dilruba Pamangadan — Portfolio
+# Mohammed Dilruba Pamangadan — 3D Portfolio
 
-A cinematic, scroll-driven portfolio for a Senior Java Backend Engineer / Technical Lead.
-Built with Vite, GSAP ScrollTrigger and Lenis smooth scrolling.
+A scroll-driven 3D portfolio. A cartoon developer walks along a glowing trace
+across a circuit board; each AI chip he reaches powers up and opens one section
+of the portfolio.
+
+Built with Vite, three.js, GSAP ScrollTrigger and Lenis. Everything in the
+scene — the character, the board, the chips — is generated in code, so there
+are no model files to download or license.
 
 ## Run locally
 
@@ -14,41 +19,31 @@ npm run preview   # serve the build
 
 ## Make it yours
 
-- **Portrait** — add a transparent-background PNG at `public/me.png`
-  (portrait orientation, ~1200px tall, cropped around the waist works best).
-  It appears in the About section and on the Experience card; until it exists,
-  the silhouette in `public/me.svg` is shown.
-- **Text, links, projects, skills** — everything lives in `src/content.js`.
+- **Text, links, projects, skills** — all in `src/content.js`.
   Add your LinkedIn URL under `profile.links.linkedin` to show its icon.
-- **Colours / fonts** — CSS variables at the top of `src/style.css`.
+- **Chips** — the `chips` list in `src/content.js` sets the section order and
+  the codes printed on each chip.
+- **Character** — colours and proportions at the top of `src/world/character.js`.
+- **Route** — the board's walking path is the `MOVES` list in `src/world/route.js`
+  (heading in 45° steps + length).
 
-## Page structure
+## How it works
 
-| Section | What happens on scroll |
+| File | Role |
 | --- | --- |
-| Hero | Distressed name layered behind and in front of the samurai, brush slashes, embers; he raises his blade as you scroll |
-| About | Pinned; spec callouts draw out from your portrait one by one |
-| Experience | Pinned; the samurai walks in, a card steps through each role, and he readies his sword |
-| Projects | Pinned "Legacy vs Modern" duel: crimson and gold samurai walk in and clash, sparks, year counter, then a horizontal project gallery |
-| Skills | Staggered reveal; chips light up |
-| AI Journey | Page turns gold; blur-to-focus headings and a drawn timeline |
-| Case studies | Architecture diagrams draw themselves |
-| Contact | The samurai walks back on and plants his sword: "Let's build" |
+| `src/main.js` | Maps scroll to the character's position: each chapter walks him to the next chip, then parks him there while its panel is shown |
+| `src/ui.js` | HTML overlay — nav, hero, one panel per chip, progress rail |
+| `src/world/scene.js` | Renderer, lights, bloom, follow camera and the frame loop |
+| `src/world/character.js` | Toon-shaded, outlined cartoon rig with walk, idle, blink and wave |
+| `src/world/board.js` | Board, traces, vias, components, blinking LEDs and data pulses |
+| `src/world/chip.js` | AI chip with gold pins and a neural-net core that lights up |
+| `src/world/route.js` | PCB-style path with 45° bends and the chip stops |
 
-Motion is disabled for visitors with `prefers-reduced-motion`, and pinned
-horizontal sections become vertical stacks on small screens.
-
-## The samurai
-
-The samurai is drawn in code (`src/samurai.js`): an SVG rig of jointed parts
-(legs, arms, torso, head, cloak, katana) posed from four values — `walk`
-(cycle phase), `walkBlend`, `draw` and `lunge` — which GSAP scrubs with scroll.
-Walk cycles are matched to the distance travelled, so the feet don't slide.
-
-To swap in photoreal footage later, generate a 5–10 s clip (Kling, Runway,
-Veo or Sora — "armoured samurai walking, dark background, red rim light"),
-export it as numbered WebP frames, and draw them to a `<canvas>` indexed by
-scroll progress in place of the SVG rig.
+The walk cycle advances with distance travelled, so his feet stay planted, and
+scrolling back makes him turn round and walk back. Phones get a lighter scene
+(no bloom, fewer parts) and bottom-sheet panels; visitors with
+`prefers-reduced-motion` get instant moves with no idle animation. Without
+WebGL the panels still read as a normal page.
 
 ## Deploy
 

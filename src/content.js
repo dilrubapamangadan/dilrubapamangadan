@@ -15,10 +15,6 @@ export const profile = {
     linkedin: '',
     github: 'https://github.com/dilrubapamangadan',
   },
-  // Portrait: drop a transparent-background PNG at public/me.png.
-  // Until then the silhouette in public/me.svg is shown.
-  photo: 'me.png',
-  photoFallback: 'me.svg',
   stats: [
     { value: 8, suffix: '+', label: 'Years in product engineering' },
     { value: 2018, suffix: '', label: 'Early engineer since' },
@@ -30,12 +26,12 @@ export const summary = [
   'I started my career in 2018 as one of the early engineers at a product-based startup, and have worked across the complete backend lifecycle — from designing systems and databases to development, deployment, CI/CD, cloud infrastructure, and technical leadership.',
 ];
 
-// Callouts pinned to points on the portrait (x/y are % of the photo box).
-export const spec = [
-  { key: 'Role', value: 'Senior Java Developer', meta: 'Tech Lead', x: 50, y: 14, side: 'right' },
-  { key: 'Core', value: 'Spring Boot · Dropwizard', meta: 'Microservices', x: 36, y: 42, side: 'left' },
-  { key: 'Cloud', value: 'AWS ECS · Fargate · Lambda', meta: 'Infrastructure', x: 64, y: 52, side: 'right' },
-  { key: 'Now', value: 'LLMs · RAG · Computer Vision', meta: 'AI / ML', x: 46, y: 76, side: 'left' },
+// Quick facts shown in the About panel.
+export const facts = [
+  { key: 'Role', value: 'Senior Java Developer · Tech Lead' },
+  { key: 'Core', value: 'Spring Boot · Dropwizard · Microservices' },
+  { key: 'Cloud', value: 'AWS ECS · Fargate · Lambda' },
+  { key: 'Now', value: 'LLMs · RAG · Computer Vision' },
 ];
 
 export const experience = {
@@ -61,13 +57,6 @@ export const experience = {
       points: ['Multi-tenant architecture', 'AWS ECS / Fargate · CI/CD', 'Team leadership'],
     },
   ],
-};
-
-export const duel = {
-  left: { tag: 'Legacy', title: 'PHP MONOLITH', items: ['Tightly coupled modules', 'Single deploy unit', 'Hand-rolled auth'] },
-  right: { tag: 'Modern', title: 'JAVA SERVICES', items: ['Spring Boot · Dropwizard', 'Containers on ECS / Fargate', 'Cognito · Keycloak (OIDC)'] },
-  word: 'MIGRATE',
-  counter: { from: 2018, to: 2026, label: 'From legacy code to cloud-native systems' },
 };
 
 export const projects = [
@@ -176,4 +165,15 @@ export const cases = [
     },
     edges: [['lib', 's1'], ['lib', 's2'], ['lib', 's3'], ['s1', 'ci'], ['s2', 'ci'], ['s3', 'ci'], ['ci', 'ecs']],
   },
+];
+
+// One AI chip on the board per section, in walking order.
+export const chips = [
+  { id: 'about', code: 'CORE-01', title: 'About' },
+  { id: 'experience', code: 'MEM-2018', title: 'Experience' },
+  { id: 'projects', code: 'GPU-05', title: 'Projects' },
+  { id: 'skills', code: 'NPU-10', title: 'Skills' },
+  { id: 'ai', code: 'AI-LLM', title: 'AI Journey' },
+  { id: 'cases', code: 'ARCH-03', title: 'Architecture' },
+  { id: 'contact', code: 'I/O-MAIL', title: 'Contact' },
 ];
